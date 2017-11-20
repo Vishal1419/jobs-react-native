@@ -1,18 +1,66 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
+import { Button } from 'react-native-elements';
+import { MapView } from 'expo';
+import { connect } from 'react-redux';
+
+import { fetchJobs } from '../actions';
 
 class MapScreen extends Component {
+    state = {
+        mapLoaded: false,
+        region: {
+            longitude: -122,
+            latitude: 37,
+            longitudeDelta: 0.04,
+            latitudeDelta: 0.09
+        }
+    }
+
+    onRegionChangeComplete = (region) => {
+        this.setState({ region });
+    }
+
+    onSearchPress = () => {
+        this.props.fetchJobs(this.state.region, () => {
+            this.props.navigation.navigate('deck');
+        });
+    }
+
+    componentDidMount() {
+        this.setState({ mapLoaded: true });
+    }
+
     render() {
+        if (!this.state.mapLoaded) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center' }} >
+                    <ActivityIndicator size="large" />
+                </View>
+            );
+        }
+
         return (
-            <View>
-                <Text>Map Screen</Text>
-                <Text>Map Screen</Text>
-                <Text>Map Screen</Text>
-                <Text>Map Screen</Text>
-                <Text>Map Screen</Text>
+            <View style={{ flex: 1 }} >
+                <MapView style={{ flex: 1 }} region={this.state.region} 
+                         onRegionChangeComplete={this.onRegionChangeComplete} />
+                <View style={styles.searchButtonContainerStyle} >
+                    <Button large backgroundColor="#009688" icon={{ name: 'search' }}
+                            title="Search This Area" onPress={this.onSearchPress} />
+                </View>
             </View>
         );
     }
 }
 
-export default MapScreen;
+const styles = {
+    searchButtonContainerStyle: {
+        position: 'absolute',
+        bottom: 20,
+        left: 0,
+        right: 0
+    }
+};
+
+
+export default connect(null, { fetchJobs })(MapScreen);
