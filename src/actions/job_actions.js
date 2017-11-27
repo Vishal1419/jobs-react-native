@@ -2,7 +2,7 @@ import convertLatLongToZip from 'latlng-to-zip';
 import queryString from 'qs';
 import axios from 'axios';
 
-import { FETCH_JOBS } from '../constants/types';
+import { FETCH_JOBS, LIKE_JOB, CLEAR_LIKED_JOBS } from '../constants/types';
 
 const JOBS_ROOT_URL = 'http://api.indeed.com/ads/apisearch?';
 const JOB_QUERY_PARAMS = {
@@ -29,4 +29,17 @@ export const fetchJobs = (region, callback) => async (dispatch) => {
     } catch (err) {
         console.log(err);
     }
+};
+
+export const likeJob = (job) => {
+    return {
+        type: LIKE_JOB,
+        payload: job
+    };
+};
+
+export const clearLikedJobs = () => {
+    return {
+        type: CLEAR_LIKED_JOBS
+    };
 };
